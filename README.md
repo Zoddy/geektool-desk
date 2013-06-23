@@ -4,7 +4,7 @@ Content for my geektool desktop.
 
 ## Scripts
 
-All scripts are 
+All scripts are node.js.
 
 ### os_downloads
 
