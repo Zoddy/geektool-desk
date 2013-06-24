@@ -12,8 +12,20 @@ var project = process.argv[2],
 
 // create from and to date
 ({
+  'current-month': function() {
+    this['past-month'](0);
+  },
+  'current-week': function() {
+    var now = new Date();
+
+    from = now.addDays(-now.getDay()).toYMD();
+    to = Date.yesterday().toYMD();
+  },
   'last-month': function() {
     this['past-month'](1);
+  },
+  'last-week': function() {
+    this['past-week'](1);
   },
   '_month': function(year, month) {
     from = (new Date(year, month, 1)).toYMD();
@@ -24,8 +36,12 @@ var project = process.argv[2],
 
     this._month(now.getFullYear(), now.getMonth());
   },
-  'current-month': function() {
-    this['past-month'](0);
+  'past-week': function(amount) {
+    var now = new Date();
+
+    to = now.addDays(-(now.getDay() + (7 * (amount - 1))));
+    from = to.clone().addDays(-6).toYMD();
+    to = to.toYMD();
   },
   'today': function() {
     from = Date.today().toYMD();
