@@ -2,12 +2,10 @@
 
 'use strict';
 
-var http = require('http');
 require('date-utils');
 
 var project = process.argv[2],
     period = process.argv[3],
-    dlUrl = 'http://isaacs.iriscouch.com/downloads/_design/app/_view/pkg?',
     from,
     to;
 
@@ -41,19 +39,16 @@ var project = process.argv[2],
 
 
 // get stats from npm registry
-http.get(
-  dlUrl +
-  'startkey=["' + project + '", "' + from + '"]' +
-  '&endkey=["' + project + '", "' + to + '"]',
-  function(response) {
-    var data = [];
-
-    response.on('data', function(chunk) {
-      data.push(chunk);
-    })
-
-    response.on('end', function() {
-      console.log(JSON.parse(data.join('')).rows[0].value);
-    });
+(new (require('cushion').Connection)(
+  'isaacs.iriscouch.com',
+  80
+)).database('downloads').view('app', 'pkg', {
+  'startkey': JSON.stringify([project, from]),
+  'endkey': JSON.stringify([project, to])
+}, function(error, result, info) {
+  if (!error && info && info[0] && info[0].value) {
+    console.log(info[0].value);
+  } else {
+    console.log('N/A');
   }
-);
+});
